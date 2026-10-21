@@ -146,7 +146,7 @@
         :parameters (?rover - Rover ?curNode - Waypoint ?data - Data ?targetLander - Lander)
         :precondition (and 
             (rover_IsDeployed ?rover)                   ;Rover is deployed?
-            (rover_IsHoldingData ?rover)                ;Rover already has data held?
+            (not (rover_IsHoldingData ?rover))          ;Rover already has data held?
             (node_HasRover ?curNode ?rover)             ;Rover on current node?
             (node_HasData ?curNode ?data)               ;Node has data for target lander?
             (data_TargetLander ?data ?targetLander)     ;Data is for target lander?
@@ -167,7 +167,7 @@
             (node_HasRover ?curNode ?rover)         ;Rover on current node?
             (node_HasLander ?curNode ?lander)       ;Node has lander?
             (lander_OwnsRover ?lander ?rover)       ;Lander owns rover?
-            (sample_TargetLander ?sample ?lander)   ;Sample is at target lander?
+            (sample_TargetLander ?sample ?lander)   ;Sample is for target lander?
             )
         :effect (and 
             (not (rover_HasSample ?rover ?sample))  ;Rover has no sample.
@@ -176,7 +176,18 @@
             (lander_IsHoldingSample ?lander)        ;Lander is holding a sample.
             )
     )
-    
-    
-    
+    (:action rover_SubmitData
+        :parameters (?rover - Rover ?curNode - Waypoint ?data - Data ?lander - Lander)
+        :precondition (and 
+            (rover_IsDeployed ?rover)               ;Rover is deployed?
+            (rover_HasData ?rover ?data)            ;Rover has data?
+            (lander_OwnsRover ?lander ?rover)       ;Lander owns rover?
+            (data_TargetLander ?data ?lander)       ;Data is for target lander?
+            )
+        :effect (and 
+            (not (rover_HasData ?rover ?data))  ;Rover has no data.
+            (not (rover_IsHoldingData ?rover))  ;Rover is not holding data.
+            (lander_HasData ?lander ?data)      ;Lander has the data.
+            )
+    )
 )

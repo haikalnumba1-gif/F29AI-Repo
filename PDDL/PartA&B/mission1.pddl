@@ -36,6 +36,9 @@
         (and
             (lander_HasSample Lander1 Sample1)
             (lander_IsHoldingSample Lander1)
+
+            (lander_HasData Lander1 Image1)
+            (lander_HasData Lander1 Scan1)
         )
     )
 )
