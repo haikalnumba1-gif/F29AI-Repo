@@ -177,7 +177,7 @@
             )
     )
     (:action rover_SubmitData
-        :parameters (?rover - Rover ?curNode - Waypoint ?data - Data ?lander - Lander)
+        :parameters (?rover - Rover ?data - Data ?lander - Lander)
         :precondition (and 
             (rover_IsDeployed ?rover)               ;Rover is deployed?
             (rover_HasData ?rover ?data)            ;Rover has data?
