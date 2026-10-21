@@ -24,23 +24,28 @@
 
 ; > Predicates
 
-; node_Neighbour - Checks node connections (I.e.: Connected neighbour).
-; node_HasLander - Checks if current node has the lander.
-; node_HasRover - Checks if current node has the rover.
-; node_IsSamplePoint
-;
+; node_Neighbour - Node connections (I.e.: Connected neighbour).
+; node_HasLander - Node has a lander.
+; node_HasRover - Node has a rover.
+; node_HasSample - Node holds a sample.
+; node_HasData - Node holds data.
+
 ; lander_HasDropped - Checks if lander has dropped.
 ; lander_HoldingRover - Checks if lander is holding its rover (I.e.: Undeployed rover).
 ; lander_OwnsRover - Checks if lander owns the rover.
-; lander_HasSample - Checks what sample the lander is holding
+; lander_HasSample - Checks what sample the lander is holding.
 ; lander_HasData - Checks what data the lander is holding.
 ; lander_IsHoldingSample - Checks if the lander is holding a sample (Restricts lander held sample to 1).
-;
+
 ; rover_IsDeployed - Checks if rover has been deployed.
-; rover_HasSample - Checks what sample the rover is holding
-; rover_HasData - Checks what data the rover is holding
-; rover_IsHoldingSample - Checks if the rover is holding a sample
-; rover_IsHoldingData - Checks if the rover is holding data
+; rover_HasSample - Checks what sample the rover is holding.
+; rover_HasData - Checks what data the rover is holding.
+; rover_IsHoldingSample - Checks if the rover is holding a sample.
+; rover_IsHoldingData - Checks if the rover is holding data.
+
+; sample_TargetLander - Sample's target lander.
+; data_TargetLander - Data's target lander. 
+
 ;====================================================================================================
 
     (:predicates
@@ -167,6 +172,7 @@
             (node_HasRover ?curNode ?rover)         ;Rover on current node?
             (node_HasLander ?curNode ?lander)       ;Node has lander?
             (lander_OwnsRover ?lander ?rover)       ;Lander owns rover?
+            (not (lander_IsHoldingSample ?lander))
             (sample_TargetLander ?sample ?lander)   ;Sample is for target lander?
             )
         :effect (and 
