@@ -1,5 +1,5 @@
 (define (domain lunar)
-    (:requirements :strips :typing :negative-preconditions)
+    (:requirements :strips :typing :negative-preconditions :conditional-effects)
 
     ; -------------------------------
     ; Types
@@ -18,6 +18,7 @@
         Rover
         Sample
         Data
+        Astronaut
     )
 
 ;====================================================================================================
@@ -46,6 +47,10 @@
 ; sample_TargetLander - Sample's target lander.
 ; data_TargetLander - Data's target lander. 
 
+; astr_ExistsForLander - Checks if an astronaut exists for a lander.
+; astr_InLander - Holds astronaut-lander relation.
+; astr_InControlRoom - Checks if astronaut is in the control room.
+; astr_InDockingBay - Checks if the astronaut is in the docking bay.
 ;====================================================================================================
 
     (:predicates
@@ -74,6 +79,12 @@
         ;Sample/Data Predicates
         (sample_TargetLander ?sample - Sample ?lander - Lander)
         (data_TargetLander ?data - Data ?lander - Lander)
+
+        ;Astronaut Predicates
+        (astr_ExistsForLander ?lander)
+        (astr_InLander ?astr - Astronaut ?lander - Lander)
+        (astr_InControlRoom ?astr - Astronaut)
+        (astr_InDockingBay ?astr - Astronaut)
     )
 
 ;====================================================================================================
@@ -117,7 +128,7 @@
     )
     
     ;Rover Actions
-    ;------------------------------------------------------------------------------------------------
+    ;--- [Movement] ---------------------------------------------------------------------------------------------
     (:action rover_Move
         :parameters (?rover - Rover ?curNode - Waypoint ?targetNode - Waypoint)
         :precondition (and 
@@ -130,12 +141,12 @@
             (node_HasRover ?targetNode ?rover)      ;New node has rover.
             )
     )
-    ;------------------------------------------------------------------------------------------------
+    ;--- [Take] ---------------------------------------------------------------------------------------------
     (:action rover_TakeSample
         :parameters (?rover - Rover ?curNode - Waypoint ?sample - Sample ?targetLander - Lander)
         :precondition (and 
             (rover_IsDeployed ?rover)                       ;Rover is deployed?
-            (not (rover_IsHoldingSample ?rover))                   ;Rover already has a sample held?
+            (not (rover_IsHoldingSample ?rover))            ;Rover already has a sample held?
             (node_HasRover ?curNode ?rover)                 ;Rover on current node?
             (node_HasSample ?curNode ?sample)               ;Node has sample?
             (sample_TargetLander ?sample ?targetLander)     ;Sample is for target lander? 
@@ -163,7 +174,7 @@
             (rover_IsHoldingData ?rover)            ;Rover is holding data.
             )
     )
-    ;------------------------------------------------------------------------------------------------
+    ;--- [Legacy Submit] ---------------------------------------------------------------------------------------------
     (:action rover_SubmitSample
         :parameters (?rover - Rover ?curNode - Waypoint ?sample - Sample ?lander - Lander)
         :precondition (and 
@@ -174,6 +185,8 @@
             (lander_OwnsRover ?lander ?rover)       ;Lander owns rover?
             (not (lander_IsHoldingSample ?lander))
             (sample_TargetLander ?sample ?lander)   ;Sample is for target lander?
+
+            (not (astr_ExistsForLander ?lander))    ;Astronaut not exist for this lander?
             )
         :effect (and 
             (not (rover_HasSample ?rover ?sample))  ;Rover has no sample.
@@ -189,6 +202,8 @@
             (rover_HasData ?rover ?data)            ;Rover has data?
             (lander_OwnsRover ?lander ?rover)       ;Lander owns rover?
             (data_TargetLander ?data ?lander)       ;Data is for target lander?
+
+            (not (astr_ExistsForLander ?lander))    ;Astronaut not exist for this lander?
             )
         :effect (and 
             (not (rover_HasData ?rover ?data))  ;Rover has no data.
@@ -196,4 +211,72 @@
             (lander_HasData ?lander ?data)      ;Lander has the data.
             )
     )
+    ;--- [Astr Submit] ---------------------------------------------------------------------------------------------
+    (:action rover_SubmitSampleAstr
+        :parameters (?rover - Rover ?curNode - Waypoint ?sample - Sample ?lander - Lander ?astr - Astronaut)
+        :precondition (and 
+            (rover_IsDeployed ?rover)               ;Rover is deployed?
+            (rover_HasSample ?rover ?sample)        ;Rover has a sample?
+            (node_HasRover ?curNode ?rover)         ;Rover on current node?
+            (node_HasLander ?curNode ?lander)       ;Node has lander?
+            (lander_OwnsRover ?lander ?rover)       ;Lander owns rover?
+            (not (lander_IsHoldingSample ?lander))
+            (sample_TargetLander ?sample ?lander)   ;Sample is for target lander?
+
+            (astr_InLander ?astr ?lander)           ;Astronaut is in this lander?
+            (astr_ExistsForLander ?lander)          ;Astronaut exists for this lander?
+            (astr_InDockingBay ?astr)               ;Astronaut is in the docking bay?
+            )
+        :effect (and 
+            (not (rover_HasSample ?rover ?sample))  ;Rover has no sample.
+            (not (rover_IsHoldingSample ?rover))    ;Rover is not holding a sample.
+            (lander_HasSample ?lander ?sample)      ;Lander has the sample.
+            (lander_IsHoldingSample ?lander)        ;Lander is holding a sample.
+            )
+    )
+    (:action rover_SubmitDataAstr
+        :parameters (?rover - Rover ?data - Data ?lander - Lander ?astr - Astronaut)
+        :precondition (and 
+            (rover_IsDeployed ?rover)               ;Rover is deployed?
+            (rover_HasData ?rover ?data)            ;Rover has data?
+            (lander_OwnsRover ?lander ?rover)       ;Lander owns rover?
+            (data_TargetLander ?data ?lander)       ;Data is for target lander?
+
+            (astr_InLander ?astr ?lander)           ;Astronaut is in this lander?
+            (astr_ExistsForLander ?lander)          ;Astronaut exists for this lander?
+            (astr_InControlRoom ?astr)              ;Astronaut is in the control room?
+            )
+        :effect (and 
+            (not (rover_HasData ?rover ?data))  ;Rover has no data.
+            (not (rover_IsHoldingData ?rover))  ;Rover is not holding data.
+            (lander_HasData ?lander ?data)      ;Lander has the data.
+            )
+    )
+
+    ;Astronaut Actions
+    ;------------------------------------------------------------------------------------------------
+    (:action astr_Move_ToControlRoom
+        :parameters (?astr - Astronaut)
+        :precondition (and 
+            (astr_InDockingBay ?astr)           ;Astr in docking bay?
+            (not (astr_InControlRoom ?astr))    ;Astr not in control room?
+            )
+        :effect (and 
+            (not(astr_InDockingBay ?astr))      ;Astr not in docking bay.
+            (astr_InControlRoom ?astr)          ;Astr in control room.
+            )
+    )
+    (:action astr_Move_ToDockingBay
+        :parameters (?astr - Astronaut)
+        :precondition (and 
+            (not (astr_InDockingBay ?astr))     ;Astr not in docking bay?
+            (astr_InControlRoom ?astr)          ;Astr in control room?
+            )
+        :effect (and 
+            (astr_InDockingBay ?astr)           ;Astr in docking bay.
+            (not (astr_InControlRoom ?astr))    ;Astr not in control room.
+            )
+    )
+    
+    
 )

@@ -5,6 +5,7 @@
         WP1 WP2 WP3 WP4 WP5 WP6 - Waypoint
         Lander1 Lander2 - Lander
         Rover1 Rover2 - Rover
+        Alice Bob - Astronaut
 
         Sample1 Sample2 - Sample
         Img1 Img2 Scan1 Scan2 - Data ;1 for Lander1, 2 for Lander2
@@ -51,6 +52,15 @@
 
         (lander_OwnsRover Lander2 Rover2)
         (lander_HasUndeployedRover Lander2)
+
+        ;Astr Init
+        (astr_ExistsForLander Lander1)
+        (astr_ExistsForLander Lander2)
+        (astr_InLander Alice Lander1)
+        (astr_InLander Bob Lander2)
+        
+        (astr_InDockingBay Alice)
+        (astr_InControlRoom Bob)
     )
 
     (:goal
