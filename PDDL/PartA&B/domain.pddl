@@ -92,11 +92,18 @@
 ; > Actions
 
 ; lander_Drop - Drops lander on a node.
-;   - Note: Allows multiple lander per node (No node/lander check).
 ; lander_DeployRover - Deploys rover from lander.
 
 ; rover_Move - Moves the rover from one node to another connected node.
 ; rover_TakeSample - Rover picks up a sample.
+; rover_TakeData - Rover picks up data.
+; rover_SubmitSample - Legacy Submit. Rover submits sample to lander.
+; rover_SubmitData - Legacy Submit. Rover submits data to lander.
+; rover_SubmitSampleAstr - Astr Submit. Rover submits sample to lander with astronaut.
+; rover_SubmitDataAstr - Astr Submit. Rover submits data to lander with astronaut.
+
+; astr_Move_ToControlRoom - Astronaut moves to control room.
+; astr_Move_ToDockingBay - Astronaut moves to docking bay.
 
 ;====================================================================================================
 
