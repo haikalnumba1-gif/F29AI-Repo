@@ -19,6 +19,9 @@ python solver.py puzzles/easy.txt
 
 # Part 2: Lunar Missions Using PDDL
 
-## How to run mission 2B/2C
-Comment out the Astronaut Initialisation in mission2.pddl to simulate part 2B.
-Uncomment the Astronaut Initialisation in mission2.pddl to simulate part 2C.
+## How to run mission
+Missions were run using VS Code pddl extension.
+
+Right click on the pddl mission to run and select planner to use.
+
+Note that the domain used for all missions are the same and is backwards compatible with and without the extension.
