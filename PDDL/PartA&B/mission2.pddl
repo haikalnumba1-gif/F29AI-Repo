@@ -54,13 +54,13 @@
         (lander_HasUndeployedRover Lander2)
 
         ;Astr Init
-        (astr_ExistsForLander Lander1)
-        (astr_ExistsForLander Lander2)
-        (astr_InLander Alice Lander1)
-        (astr_InLander Bob Lander2)
+        ;(astr_ExistsForLander Lander1)
+        ;(astr_ExistsForLander Lander2)
+        ;(astr_InLander Alice Lander1)
+        ;(astr_InLander Bob Lander2)
         
-        (astr_InDockingBay Alice)
-        (astr_InControlRoom Bob)
+        ;(astr_InDockingBay Alice)
+        ;(astr_InControlRoom Bob)
     )
 
     (:goal

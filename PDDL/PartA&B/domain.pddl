@@ -1,15 +1,9 @@
 (define (domain lunar)
-    (:requirements :strips :typing :negative-preconditions :conditional-effects)
+    (:requirements :strips :typing :negative-preconditions)
 
     ; -------------------------------
     ; Types
     ; -------------------------------
-
-    ; EXAMPLE
-
-    ; (:types
-    ;     parent_type
-    ;     child_type - parent_type
 
     ; )
     (:types
